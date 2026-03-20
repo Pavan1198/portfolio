@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Paverse</title>
+    <script>
+      const path = window.location.pathname;
+      const search = window.location.search;
+      const hash = window.location.hash;
+      const target = `/?p=${encodeURIComponent(path)}&q=${encodeURIComponent(search)}&h=${encodeURIComponent(hash)}`;
+      window.location.replace(target);
+    </script>
+  </head>
+  <body></body>
+</html>

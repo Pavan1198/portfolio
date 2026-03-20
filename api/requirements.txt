@@ -1,0 +1,6 @@
+# FastAPI backend dependencies
+# Used for local development with `npm.cmd run deploy`
+# or for hosting the API separately from GitHub Pages.
+
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
