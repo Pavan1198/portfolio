@@ -80,7 +80,7 @@ Because of that:
 - Resume and Projects fall back to built-in frontend data when no API is configured.
 - Learning falls back to built-in frontend data when no API is configured.
 - Contact falls back to `mailto:` when no external API is configured.
-- Resume unlocking requires the FastAPI backend (or another hosted API) because password checks run through `/api/auth/resume`.
+- Resume unlocking can use the FastAPI backend via `/api/auth/resume`, or a frontend-only fallback password in static GitHub Pages builds.
 
 ### Optional external API
 
@@ -93,6 +93,10 @@ https://api.paverse.in
 ```
 
 If you want to change the resume password, set the `RESUME_PASSWORD` environment variable on the Python API host.
+
+If you want the resume password prompt to work on GitHub Pages without a hosted API, add a repository variable named `VITE_RESUME_PASSWORD`.
+
+Important: `VITE_RESUME_PASSWORD` is embedded into the frontend build, so it is suitable only for lightweight gating, not real security.
 
 ### Custom domain
 

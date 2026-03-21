@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, Eye, EyeOff, Lock, X } from "lucide-react";
-import { apiUrl } from "@/lib/api";
+import { apiUrl, hasExternalApi } from "@/lib/api";
 
 interface Props {
   open: boolean;
@@ -10,6 +10,7 @@ interface Props {
 }
 
 type Status = "idle" | "loading" | "error";
+const frontendResumePassword = (import.meta.env.VITE_RESUME_PASSWORD ?? "").trim();
 
 export default function ResumePasswordModal({ open, onClose, onSuccess }: Props) {
   const [password, setPassword] = useState("");
@@ -57,6 +58,29 @@ export default function ResumePasswordModal({ open, onClose, onSuccess }: Props)
 
     setStatus("loading");
     setErrorMessage("");
+
+    // GitHub Pages cannot call the Python API, so static builds can optionally
+    // validate against a frontend password baked in at build time.
+    if (import.meta.env.PROD && !hasExternalApi) {
+      if (!frontendResumePassword) {
+        setStatus("error");
+        setPassword("");
+        setErrorMessage("Resume password is not configured for this deployment.");
+        window.setTimeout(() => inputRef.current?.focus(), 50);
+        return;
+      }
+
+      if (trimmedPassword === frontendResumePassword) {
+        onSuccess();
+        return;
+      }
+
+      setStatus("error");
+      setPassword("");
+      setErrorMessage("Incorrect password. Please try again.");
+      window.setTimeout(() => inputRef.current?.focus(), 50);
+      return;
+    }
 
     try {
       const response = await fetch(apiUrl("/api/auth/resume"), {
