@@ -5,7 +5,11 @@ export function hasResumeAccess() {
     return false;
   }
 
-  return window.sessionStorage.getItem(RESUME_ACCESS_KEY) === "granted";
+  try {
+    return window.sessionStorage.getItem(RESUME_ACCESS_KEY) === "granted";
+  } catch {
+    return false;
+  }
 }
 
 export function grantResumeAccess() {
@@ -13,5 +17,9 @@ export function grantResumeAccess() {
     return;
   }
 
-  window.sessionStorage.setItem(RESUME_ACCESS_KEY, "granted");
+  try {
+    window.sessionStorage.setItem(RESUME_ACCESS_KEY, "granted");
+  } catch {
+    // Ignore storage failures so the app still works in restricted browsers.
+  }
 }
