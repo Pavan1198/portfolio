@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Mail, Phone, MapPin, Linkedin, Github, Download } from "lucide-react";
 import { apiUrl } from "@/lib/api";
+import { hasResumeAccess } from "@/lib/resumeAccess";
 
 const stagger = {
   hidden: {},
@@ -92,6 +94,14 @@ type ResumeData = typeof resumeData;
 
 export default function ResumePage() {
   const [, navigate] = useLocation();
+  const canViewResume = hasResumeAccess();
+
+  useEffect(() => {
+    if (!canViewResume) {
+      navigate("/");
+    }
+  }, [canViewResume, navigate]);
+
   const { data: apiData } = useQuery<ResumeData>({
     queryKey: ["resume"],
     queryFn: async () => {
@@ -103,6 +113,10 @@ export default function ResumePage() {
     },
   });
   const resume = apiData ?? resumeData;
+
+  if (!canViewResume) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[#0f0f11] text-white">

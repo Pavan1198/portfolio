@@ -1,9 +1,11 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 import json
 import os
+from datetime import datetime
+from typing import Any
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 app = FastAPI(title="Paverse Portfolio API")
 
@@ -15,18 +17,23 @@ app.add_middleware(
 )
 
 CONTACTS_FILE = os.path.join(os.path.dirname(__file__), "contacts.json")
+RESUME_PASSWORD = os.getenv("RESUME_PASSWORD", "paverse2025")
+
 
 def load_contacts():
     if not os.path.exists(CONTACTS_FILE):
         return []
-    with open(CONTACTS_FILE, "r") as f:
-        return json.load(f)
 
-def save_contact(contact: dict):
+    with open(CONTACTS_FILE, "r", encoding="utf-8") as file:
+        return json.load(file)
+
+
+def save_contact(contact: dict[str, Any]):
     contacts = load_contacts()
     contacts.append(contact)
-    with open(CONTACTS_FILE, "w") as f:
-        json.dump(contacts, f, indent=2)
+
+    with open(CONTACTS_FILE, "w", encoding="utf-8") as file:
+        json.dump(contacts, file, indent=2)
 
 
 class ContactMessage(BaseModel):
@@ -34,6 +41,18 @@ class ContactMessage(BaseModel):
     email: str
     subject: str
     message: str
+
+
+class PasswordCheck(BaseModel):
+    password: str
+
+
+@app.post("/api/auth/resume")
+def check_resume_password(body: PasswordCheck):
+    if body.password == RESUME_PASSWORD:
+        return {"success": True}
+
+    raise HTTPException(status_code=401, detail="Incorrect password")
 
 
 @app.get("/api/resume")
@@ -54,7 +73,7 @@ def get_resume():
             {
                 "title": "Senior Full Stack Developer",
                 "company": "Tech Company",
-                "period": "2022 — Present",
+                "period": "2022 - Present",
                 "location": "Remote",
                 "points": [
                     "Led development of core product features used by 50,000+ users",
@@ -65,7 +84,7 @@ def get_resume():
             {
                 "title": "Software Engineer",
                 "company": "Startup Inc.",
-                "period": "2020 — 2022",
+                "period": "2020 - 2022",
                 "location": "Bengaluru, India",
                 "points": [
                     "Built REST APIs serving millions of requests per day",
@@ -78,7 +97,7 @@ def get_resume():
             {
                 "degree": "B.Tech in Computer Science",
                 "institution": "Your University",
-                "period": "2016 — 2020",
+                "period": "2016 - 2020",
                 "grade": "First Class with Distinction",
             }
         ],
@@ -90,7 +109,7 @@ def get_resume():
             "Databases": ["PostgreSQL", "MongoDB", "Redis"],
         },
         "certifications": [
-            "AWS Certified Developer — Associate",
+            "AWS Certified Developer - Associate",
             "Google Cloud Professional Data Engineer",
             "Meta Front-End Developer Certificate",
         ],
@@ -145,9 +164,126 @@ def get_projects():
     ]
 
 
+@app.get("/api/learning")
+def get_learning():
+    return {
+        "repos": [
+            {
+                "id": "r01",
+                "title": "Free Programming Books",
+                "description": "Freely available programming books in many languages - one of the largest curated lists on GitHub.",
+                "url": "https://github.com/EbookFoundation/free-programming-books",
+                "stars": "340k+",
+                "tags": ["Books", "All Languages", "Beginner to Pro"],
+                "accent": "#6366f1",
+            },
+            {
+                "id": "r02",
+                "title": "System Design Primer",
+                "description": "Learn how to design large-scale systems with architecture patterns, notes, and interview prep examples.",
+                "url": "https://github.com/donnemartin/system-design-primer",
+                "stars": "280k+",
+                "tags": ["System Design", "Architecture", "Interview Prep"],
+                "accent": "#10b981",
+            },
+            {
+                "id": "r03",
+                "title": "Build Your Own X",
+                "description": "Master programming by recreating technologies from scratch, from databases and compilers to browsers and operating systems.",
+                "url": "https://github.com/codecrafters-io/build-your-own-x",
+                "stars": "310k+",
+                "tags": ["Projects", "Deep Dive", "All Levels"],
+                "accent": "#f59e0b",
+            },
+            {
+                "id": "r04",
+                "title": "You Don't Know JS",
+                "description": "A deep-dive series into the core mechanisms of JavaScript, including scope, closures, async behavior, and types.",
+                "url": "https://github.com/getify/You-Dont-Know-JS",
+                "stars": "180k+",
+                "tags": ["JavaScript", "Deep Dive", "Intermediate"],
+                "accent": "#ec4899",
+            },
+            {
+                "id": "r05",
+                "title": "Developer Roadmaps",
+                "description": "Community-driven roadmaps, articles, and resources that help developers choose and structure a learning path.",
+                "url": "https://github.com/kamranahmedse/developer-roadmap",
+                "stars": "300k+",
+                "tags": ["Career", "Roadmap", "All Levels"],
+                "accent": "#14b8a6",
+            },
+            {
+                "id": "r06",
+                "title": "The Book of Secret Knowledge",
+                "description": "A broad collection of manuals, cheatsheets, blogs, one-liners, tools, and reference material for developers.",
+                "url": "https://github.com/trimstray/the-book-of-secret-knowledge",
+                "stars": "145k+",
+                "tags": ["DevOps", "CLI", "Security", "Reference"],
+                "accent": "#8b5cf6",
+            },
+        ],
+        "blogs": [
+            {
+                "id": "b01",
+                "title": "Paul Graham's Essays",
+                "author": "Paul Graham",
+                "description": "Timeless essays on startups, programming, life, and thinking that remain useful for serious builders.",
+                "url": "https://paulgraham.com/articles.html",
+                "tags": ["Startups", "Thinking", "Essays"],
+                "accent": "#6366f1",
+            },
+            {
+                "id": "b02",
+                "title": "Overreacted",
+                "author": "Dan Abramov",
+                "description": "Deep dives into React internals, JavaScript mental models, and software engineering principles.",
+                "url": "https://overreacted.io",
+                "tags": ["React", "JavaScript", "Mental Models"],
+                "accent": "#61dafb",
+            },
+            {
+                "id": "b03",
+                "title": "Martin Fowler's Blog",
+                "author": "Martin Fowler",
+                "description": "Architecture patterns, refactoring, microservices, and software design guidance from a true industry legend.",
+                "url": "https://martinfowler.com",
+                "tags": ["Architecture", "Patterns", "Enterprise"],
+                "accent": "#10b981",
+            },
+            {
+                "id": "b04",
+                "title": "Julia Evans' Blog",
+                "author": "Julia Evans",
+                "description": "Approachable posts on Linux, networking, debugging, and systems topics written with contagious curiosity.",
+                "url": "https://jvns.ca",
+                "tags": ["Linux", "Systems", "Networking"],
+                "accent": "#f59e0b",
+            },
+            {
+                "id": "b05",
+                "title": "The Pragmatic Engineer",
+                "author": "Gergely Orosz",
+                "description": "In-depth articles on engineering culture, career growth, big tech internals, and software craftsmanship.",
+                "url": "https://blog.pragmaticengineer.com",
+                "tags": ["Career", "Big Tech", "Engineering Culture"],
+                "accent": "#ec4899",
+            },
+            {
+                "id": "b06",
+                "title": "High Scalability",
+                "author": "Todd Hoff",
+                "description": "Real-world architecture stories showing how large systems scale to millions of users.",
+                "url": "https://highscalability.com",
+                "tags": ["Scalability", "Architecture", "Case Studies"],
+                "accent": "#14b8a6",
+            },
+        ],
+    }
+
+
 @app.post("/api/contact")
 def submit_contact(msg: ContactMessage):
-    from datetime import datetime
     entry = {
         "name": msg.name,
         "email": msg.email,

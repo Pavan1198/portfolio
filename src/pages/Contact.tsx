@@ -90,7 +90,7 @@ export default function ContactPage() {
           <ArrowLeft size={14} />
           Back
         </button>
-        <span className="font-mono text-xs text-white/30 tracking-[0.25em] uppercase">03 / Contact</span>
+        <span className="font-mono text-xs text-white/30 tracking-[0.25em] uppercase">04 / Contact</span>
         <span className="font-mono text-xs text-white/20 tracking-widest">Get In Touch</span>
       </header>
 

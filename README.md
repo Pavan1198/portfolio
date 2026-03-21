@@ -7,6 +7,7 @@ Personal portfolio for [paverse.in](https://paverse.in), built with a React + Ty
 - Home
 - Resume
 - Projects
+- Learning
 - Contact
 - 404
 
@@ -77,7 +78,9 @@ GitHub Pages can host the React frontend only. It cannot run the FastAPI backend
 Because of that:
 
 - Resume and Projects fall back to built-in frontend data when no API is configured.
+- Learning falls back to built-in frontend data when no API is configured.
 - Contact falls back to `mailto:` when no external API is configured.
+- Resume unlocking requires the FastAPI backend (or another hosted API) because password checks run through `/api/auth/resume`.
 
 ### Optional external API
 
@@ -88,6 +91,8 @@ Example:
 ```text
 https://api.paverse.in
 ```
+
+If you want to change the resume password, set the `RESUME_PASSWORD` environment variable on the Python API host.
 
 ### Custom domain
 
@@ -108,6 +113,7 @@ After pushing to GitHub:
 
 - Update resume fallback data in `src/pages/Resume.tsx`
 - Update project fallback data in `src/pages/Projects.tsx`
+- Update learning fallback data in `src/pages/Learning.tsx`
 - Update home content in `src/pages/Home.tsx`
 - Update contact defaults in `src/pages/Contact.tsx`
 
