@@ -63,14 +63,12 @@ export default function Home() {
       </header>
 
       <div className="px-8 pb-10 pt-32">
-        <motion.div custom={0} initial="hidden" animate="visible" variants={fadeUp} className="max-w-[900px]">
-          <p className="mb-6 font-mono text-xs tracking-[0.25em] text-white/30 uppercase">Portfolio - 2025</p>
-          <h1 className="text-[clamp(3rem,8vw,7rem)] font-black leading-[0.9] tracking-[-0.04em] text-white uppercase">
-            CREATIVE
-            <br />
-            <span className="text-white/20">DEVELOPER</span>
-            <br />
-            PORTFOLIO
+        <motion.div custom={0} initial="hidden" animate="visible" variants={fadeUp} className="max-w-[840px]">
+          <p className="mb-6 font-mono text-xs tracking-[0.25em] text-white/30 uppercase">Portfolio - 2026</p>
+          <h1 className="max-w-[820px] text-[clamp(2.2rem,5.6vw,5rem)] font-black leading-[0.88] tracking-[-0.045em] text-white uppercase">
+            Hi, I’m Pavan
+            <span className="mt-3 block text-white/20 md:mt-4">DevOps Engineer</span>
+            <span className="mt-3 block md:mt-4">AI Systems Builder</span>
           </h1>
         </motion.div>
 
@@ -79,7 +77,7 @@ export default function Home() {
           initial="hidden"
           animate="visible"
           variants={fadeUp}
-          className="mt-8 max-w-md text-sm font-light leading-relaxed tracking-wide text-white/40"
+          className="mt-8 max-w-xl text-sm font-light leading-relaxed tracking-wide text-white/40"
         >
           Explore my professional journey, personal projects, learning resources,
           and more. Each card takes you into a different dimension of my work.

@@ -1,0 +1,38 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="22" y1="14" x2="158" y2="166" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#09111D"/>
+      <stop offset="1" stop-color="#03050B"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(90 88) rotate(90) scale(74)">
+      <stop stop-color="#1A2E47"/>
+      <stop offset="1" stop-color="#1A2E47" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="beamA" x1="54" y1="126" x2="126" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#63F0D5"/>
+      <stop offset="1" stop-color="#7BA0FF"/>
+    </linearGradient>
+    <linearGradient id="beamB" x1="54" y1="54" x2="126" y2="126" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFB96B"/>
+      <stop offset="1" stop-color="#9C7DFF"/>
+    </linearGradient>
+    <radialGradient id="core" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(90 90) rotate(90) scale(22)">
+      <stop stop-color="#F9FCFF"/>
+      <stop offset="1" stop-color="#C4D8FF"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="180" height="180" rx="38" fill="url(#bg)"/>
+  <rect x="1" y="1" width="178" height="178" rx="37" stroke="#FFFFFF" stroke-opacity="0.08"/>
+  <circle cx="90" cy="90" r="74" fill="url(#halo)"/>
+
+  <g opacity="0.18">
+    <circle cx="90" cy="90" r="52" stroke="#76CFFF" stroke-width="1.4"/>
+    <circle cx="90" cy="90" r="34" stroke="#63F0D5" stroke-width="1.2"/>
+  </g>
+
+  <path d="M90 42L103 77L138 90L103 103L90 138L77 103L42 90L77 77L90 42Z" fill="url(#beamA)"/>
+  <path d="M90 56L99 81L124 90L99 99L90 124L81 99L56 90L81 81L90 56Z" fill="url(#beamB)" fill-opacity="0.94"/>
+  <circle cx="90" cy="90" r="13" fill="url(#core)"/>
+  <circle cx="90" cy="90" r="5.5" fill="#07101A"/>
+</svg>

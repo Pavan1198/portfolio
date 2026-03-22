@@ -299,6 +299,8 @@ Use these files for:
 ### Public/static files
 
 - `public/favicon.svg`: site icon
+- `public/favicon-spark.svg`: alternate AI-style favicon option
+- `public/favicon-knot.svg`: alternate AI-style favicon option
 - `public/opengraph.jpg`: social preview image
 - `public/CNAME`: GitHub Pages custom domain
 - `public/404.html`: GitHub Pages SPA redirect helper
@@ -346,3 +348,8 @@ If you want to change the project cards:
 
 - `src/pages/Projects.tsx`
 - `api/main.py`
+
+If you want to switch favicon styles:
+
+- update the `href` in `index.html`
+- available files are `public/favicon.svg`, `public/favicon-spark.svg`, and `public/favicon-knot.svg`
