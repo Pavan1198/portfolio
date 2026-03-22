@@ -1,8 +1,26 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, ExternalLink, Github, Zap } from "lucide-react";
+import { Activity, ArrowLeft, Boxes, ExternalLink, Github, Sparkles, Zap } from "lucide-react";
+import DevOpsPipelineModal from "@/components/DevOpsPipelineModal";
 import { apiUrl } from "@/lib/api";
+import { cn } from "@/lib/utils";
+
+type Project = {
+  id: string;
+  title: string;
+  description: string;
+  stack: string[];
+  category: string;
+  status: string;
+  accent: string;
+  links: {
+    github: string;
+    live: string | null;
+  };
+  highlights: string[];
+};
 
 const stagger = {
   hidden: {},
@@ -14,7 +32,7 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
 };
 
-const projects = [
+const fallbackProjects: Project[] = [
   {
     id: "01",
     title: "AI-Powered Analytics Dashboard",
@@ -77,9 +95,9 @@ const projects = [
   },
   {
     id: "06",
-    title: "Portfolio OS — Paverse",
+    title: "Portfolio OS - Paverse",
     description:
-      "This very website — an enterprise-grade portfolio built with React, Python, and modern web technologies. Features smooth animations, dark design, and mobile-first layout.",
+      "This very website - an enterprise-grade portfolio built with React, Python, and modern web technologies. Features smooth animations, dark design, and mobile-first layout.",
     stack: ["React", "TypeScript", "Framer Motion", "Python", "Tailwind"],
     category: "Design",
     status: "Live",
@@ -89,183 +107,244 @@ const projects = [
   },
 ];
 
+const devOpsPipelineProject: Project = fallbackProjects[3];
+
 const statusColors: Record<string, string> = {
   Live: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
   Beta: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
   "Open Source": "text-blue-400 bg-blue-400/10 border-blue-400/20",
 };
 
+function isPipelineProject(project: Pick<Project, "title" | "category" | "id">) {
+  return (
+    project.id === "04" ||
+    project.title.toLowerCase().includes("devops") ||
+    project.title.toLowerCase().includes("ci/cd") ||
+    project.category.toLowerCase().includes("devops")
+  );
+}
+
+function ensurePipelineProject(projects: Project[]) {
+  if (projects.some((project) => isPipelineProject(project))) {
+    return projects;
+  }
+
+  return [...projects, devOpsPipelineProject];
+}
+
+function buildPipelineProject(project: Project): Project {
+  return {
+    ...devOpsPipelineProject,
+    ...project,
+    links: {
+      ...devOpsPipelineProject.links,
+      ...project.links,
+    },
+  };
+}
+
 export default function ProjectsPage() {
   const [, navigate] = useLocation();
-  const { data: apiProjects } = useQuery({
+  const [activePipelineProject, setActivePipelineProject] = useState<Project | null>(null);
+  const { data: apiProjects } = useQuery<Project[]>({
     queryKey: ["projects"],
     queryFn: async () => {
       const response = await fetch(apiUrl("/api/projects"));
       if (!response.ok) {
         throw new Error("Unable to load projects");
       }
-      return response.json();
+      return response.json() as Promise<Project[]>;
     },
+    retry: false,
+    refetchOnWindowFocus: false,
   });
-  const projectList = apiProjects ?? projects;
+
+  const projectList =
+    apiProjects && apiProjects.length > 0 ? ensurePipelineProject(apiProjects) : fallbackProjects;
 
   return (
     <div className="min-h-screen bg-[#0f0f11] text-white">
-      {/* Fixed header */}
-      <header className="sticky top-0 z-50 bg-[#0f0f11]/90 backdrop-blur-sm border-b border-white/5 px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-white/5 bg-[#0f0f11]/90 px-6 py-4 backdrop-blur-sm">
         <button
           onClick={() => navigate("/")}
-          className="flex items-center gap-2 font-mono text-xs text-white/40 hover:text-white transition-colors tracking-widest uppercase"
+          className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-white/40 transition-colors hover:text-white"
         >
           <ArrowLeft size={14} />
           Back
         </button>
-        <span className="font-mono text-xs text-white/30 tracking-[0.25em] uppercase">02 / Projects</span>
-        <span className="font-mono text-xs text-white/20 tracking-widest">{projectList.length} Projects</span>
+        <span className="font-mono text-xs uppercase tracking-[0.25em] text-white/30">02 / Projects</span>
+        <span className="font-mono text-xs tracking-widest text-white/20">{projectList.length} Projects</span>
       </header>
 
-      <div className="max-w-5xl mx-auto px-6 py-16">
-        {/* Heading */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={stagger}
-          className="mb-16"
-        >
-          <motion.p variants={fadeUp} className="font-mono text-xs text-white/30 tracking-[0.3em] uppercase mb-4">
-            Paverse.in — Personal Work
+      <div className="mx-auto max-w-5xl px-6 py-16">
+        <motion.div initial="hidden" animate="visible" variants={stagger} className="mb-16">
+          <motion.p variants={fadeUp} className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-white/30">
+            Paverse.in - Personal Work
           </motion.p>
-          <motion.h1 variants={fadeUp} className="text-[clamp(3rem,7vw,6rem)] font-black tracking-[-0.04em] leading-none uppercase text-white mb-6">
+          <motion.h1
+            variants={fadeUp}
+            className="mb-6 text-[clamp(3rem,7vw,6rem)] font-black leading-none tracking-[-0.04em] text-white uppercase"
+          >
             PERSONAL
             <br />
             <span className="text-white/20">PROJECTS</span>
           </motion.h1>
-          <motion.p variants={fadeUp} className="text-sm text-white/40 max-w-lg leading-relaxed">
-            A collection of things I've built — from AI-powered platforms to open source tools.
+          <motion.p variants={fadeUp} className="max-w-lg text-sm leading-relaxed text-white/40">
+            A collection of things I've built - from AI-powered platforms to open source tools.
             Each project reflects my approach to solving real problems with clean code.
           </motion.p>
         </motion.div>
 
-        {/* Projects grid */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={stagger}
-          className="space-y-5"
-        >
-          {projectList.map((project) => (
-            <motion.article
-              key={project.id}
-              variants={fadeUp}
-              className="group relative rounded-2xl border border-white/8 bg-white/3 hover:bg-white/5 hover:border-white/15 transition-all duration-300 overflow-hidden"
-            >
-              {/* Accent line */}
-              <div
-                className="absolute top-0 left-0 right-0 h-px opacity-40 group-hover:opacity-80 transition-opacity duration-300"
-                style={{ background: `linear-gradient(90deg, transparent, ${project.accent}, transparent)` }}
-              />
+        <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-5">
+          {projectList.map((project) => {
+            const interactive = isPipelineProject(project);
 
-              <div className="p-8">
-                <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                  {/* Left */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-4 mb-4">
-                      <span className="font-mono text-[10px] text-white/20 tracking-[0.3em]">{project.id}</span>
-                      <span
-                        className={`font-mono text-[10px] tracking-[0.2em] uppercase px-2 py-0.5 rounded border ${statusColors[project.status]}`}
-                      >
-                        {project.status}
-                      </span>
-                      <span className="font-mono text-[10px] text-white/20 tracking-[0.2em] uppercase">
-                        {project.category}
-                      </span>
-                    </div>
+            return (
+              <motion.article
+                key={project.id}
+                variants={fadeUp}
+                className={cn(
+                  "group relative overflow-hidden rounded-2xl border border-white/8 bg-white/3 transition-all duration-300 hover:border-white/15 hover:bg-white/5",
+                  interactive && "hover:border-amber-300/20 hover:bg-amber-400/[0.04]",
+                )}
+              >
+                <div
+                  className="absolute left-0 right-0 top-0 h-px opacity-40 transition-opacity duration-300 group-hover:opacity-80"
+                  style={{ background: `linear-gradient(90deg, transparent, ${project.accent}, transparent)` }}
+                />
 
-                    <h2 className="text-xl font-bold text-white tracking-tight mb-3 group-hover:text-white transition-colors">
-                      {project.title}
-                    </h2>
-
-                    <p className="text-sm text-white/40 leading-relaxed mb-5 max-w-xl">
-                      {project.description}
-                    </p>
-
-                    {/* Highlights */}
-                    <div className="flex flex-wrap gap-2 mb-5">
-                      {project.highlights.map((h) => (
+                <div className="p-8">
+                  <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+                    <div className="flex-1">
+                      <div className="mb-4 flex items-center gap-4">
+                        <span className="font-mono text-[10px] tracking-[0.3em] text-white/20">{project.id}</span>
                         <span
-                          key={h}
-                          className="flex items-center gap-1.5 font-mono text-[10px] text-white/40 tracking-wide"
+                          className={`rounded border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.2em] ${
+                            statusColors[project.status] ?? "border-white/15 bg-white/5 text-white/50"
+                          }`}
                         >
-                          <Zap size={9} style={{ color: project.accent }} />
-                          {h}
+                          {project.status}
                         </span>
-                      ))}
+                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/20">
+                          {project.category}
+                        </span>
+                      </div>
+
+                      <h2 className="mb-3 text-xl font-bold tracking-tight text-white transition-colors group-hover:text-white">
+                        {project.title}
+                      </h2>
+
+                      <p className="mb-5 max-w-xl text-sm leading-relaxed text-white/40">
+                        {project.description}
+                      </p>
+
+                      {interactive && (
+                        <div className="mb-5 flex flex-wrap gap-2">
+                          <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em] text-amber-100">
+                            <Boxes size={12} />
+                            3D Scene
+                          </span>
+                          <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-400/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-100">
+                            <Activity size={12} />
+                            Live Log Stream
+                          </span>
+                          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-100">
+                            <Sparkles size={12} />
+                            Orbit + Zoom
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="mb-5 flex flex-wrap gap-2">
+                        {project.highlights.map((highlight) => (
+                          <span
+                            key={highlight}
+                            className="flex items-center gap-1.5 font-mono text-[10px] tracking-wide text-white/40"
+                          >
+                            <Zap size={9} style={{ color: project.accent }} />
+                            {highlight}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex flex-wrap gap-1.5">
+                        {project.stack.map((tech) => (
+                          <span
+                            key={tech}
+                            className="rounded border border-white/8 bg-white/5 px-2 py-0.5 font-mono text-[11px] text-white/50 transition-all hover:border-white/20 hover:text-white/80"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Tech stack */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {project.stack.map((tech) => (
-                        <span
-                          key={tech}
-                          className="px-2 py-0.5 rounded text-[11px] font-mono text-white/50 bg-white/5 border border-white/8 hover:border-white/20 hover:text-white/80 transition-all"
+                    <div className="flex flex-shrink-0 gap-3 lg:flex-col">
+                      {interactive && (
+                        <button
+                          type="button"
+                          onClick={() => setActivePipelineProject(buildPipelineProject(project))}
+                          className="inline-flex items-center gap-2 rounded-xl border border-amber-300/22 bg-amber-400/12 px-4 py-2.5 font-mono text-xs uppercase tracking-widest text-amber-100 transition-all hover:border-amber-200/35 hover:text-white"
                         >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                          <Boxes size={13} />
+                          View Pipeline
+                        </button>
+                      )}
 
-                  {/* Right — links */}
-                  <div className="flex lg:flex-col gap-3 flex-shrink-0">
-                    <a
-                      href={project.links.github}
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 hover:border-white/25 text-white/40 hover:text-white transition-all font-mono text-xs tracking-widest uppercase"
-                    >
-                      <Github size={13} />
-                      Code
-                    </a>
-                    {project.links.live && (
                       <a
-                        href={project.links.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 hover:border-white/25 text-white/40 hover:text-white transition-all font-mono text-xs tracking-widest uppercase"
+                        href={project.links.github}
+                        onClick={(event) => event.stopPropagation()}
+                        className="flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 font-mono text-xs uppercase tracking-widest text-white/40 transition-all hover:border-white/25 hover:text-white"
                       >
-                        <ExternalLink size={13} />
-                        Live
+                        <Github size={13} />
+                        Code
                       </a>
-                    )}
+
+                      {project.links.live && (
+                        <a
+                          href={project.links.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(event) => event.stopPropagation()}
+                          className="flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 font-mono text-xs uppercase tracking-widest text-white/40 transition-all hover:border-white/25 hover:text-white"
+                        >
+                          <ExternalLink size={13} />
+                          Live
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.article>
-          ))}
+              </motion.article>
+            );
+          })}
         </motion.div>
 
-        {/* Footer note */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
-          className="mt-16 pt-10 border-t border-white/8 flex items-center justify-between"
+          className="mt-16 flex items-center justify-between border-t border-white/8 pt-10"
         >
-          <p className="font-mono text-xs text-white/20 tracking-widest">
-            More on GitHub →
-          </p>
+          <p className="font-mono text-xs tracking-widest text-white/20">More on GitHub -&gt;</p>
           <a
             href="https://github.com/yourhandle"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 font-mono text-xs text-white/30 hover:text-white transition-colors tracking-widest"
+            className="flex items-center gap-2 font-mono text-xs tracking-widest text-white/30 transition-colors hover:text-white"
           >
             <Github size={12} />
             yourhandle
           </a>
         </motion.div>
       </div>
+
+      <DevOpsPipelineModal
+        open={Boolean(activePipelineProject)}
+        project={activePipelineProject}
+        onClose={() => setActivePipelineProject(null)}
+      />
     </div>
   );
 }

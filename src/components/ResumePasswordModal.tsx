@@ -11,6 +11,9 @@ interface Props {
 
 type Status = "idle" | "loading" | "error";
 const frontendResumePassword = (import.meta.env.VITE_RESUME_PASSWORD ?? "").trim();
+const defaultLocalResumePassword = "paverse2025";
+const fallbackResumePassword =
+  frontendResumePassword || (!import.meta.env.PROD ? defaultLocalResumePassword : "");
 
 export default function ResumePasswordModal({ open, onClose, onSuccess }: Props) {
   const [password, setPassword] = useState("");
@@ -82,6 +85,15 @@ export default function ResumePasswordModal({ open, onClose, onSuccess }: Props)
       return;
     }
 
+    const unlockWithFallback = () => {
+      if (trimmedPassword === fallbackResumePassword) {
+        onSuccess();
+        return true;
+      }
+
+      return false;
+    };
+
     try {
       const response = await fetch(apiUrl("/api/auth/resume"), {
         method: "POST",
@@ -90,12 +102,18 @@ export default function ResumePasswordModal({ open, onClose, onSuccess }: Props)
       });
 
       if (!response.ok) {
+        if (response.status !== 401 && unlockWithFallback()) {
+          return;
+        }
+
         setStatus("error");
         setPassword("");
         setErrorMessage(
           response.status === 401
             ? "Incorrect password. Please try again."
-            : "Unable to verify right now. Make sure the API is running.",
+            : !import.meta.env.PROD && !frontendResumePassword
+              ? "API is unavailable. Local default password: paverse2025."
+              : "Unable to verify right now. Make sure the API is running.",
         );
         window.setTimeout(() => inputRef.current?.focus(), 50);
         return;
@@ -103,9 +121,17 @@ export default function ResumePasswordModal({ open, onClose, onSuccess }: Props)
 
       onSuccess();
     } catch {
+      if (unlockWithFallback()) {
+        return;
+      }
+
       setStatus("error");
       setPassword("");
-      setErrorMessage("Unable to verify right now. Make sure the API is running.");
+      setErrorMessage(
+        !import.meta.env.PROD && !frontendResumePassword
+          ? "API is unavailable. Local default password: paverse2025."
+          : "Unable to verify right now. Make sure the API is running.",
+      );
       window.setTimeout(() => inputRef.current?.focus(), 50);
     }
   };
@@ -213,6 +239,12 @@ export default function ResumePasswordModal({ open, onClose, onSuccess }: Props)
                   )}
                 </button>
               </form>
+
+              {!import.meta.env.PROD && !frontendResumePassword && (
+                <p className="mt-4 text-center font-mono text-[10px] tracking-widest text-white/25">
+                  Local default password: paverse2025
+                </p>
+              )}
 
               <p className="mt-5 text-center font-mono text-[11px] tracking-wider text-white/20">
                 01 / RESUME - PRIVATE

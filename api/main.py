@@ -161,6 +161,20 @@ def get_projects():
                 "live": "https://analytics.paverse.in",
             },
         },
+        {
+            "id": "04",
+            "title": "DevOps Automation Toolkit",
+            "category": "DevOps",
+            "status": "Open Source",
+            "description": "CLI tool and web dashboard for automating deployment pipelines, monitoring infrastructure health, and managing cloud resources across AWS and GCP.",
+            "stack": ["Python", "TypeScript", "React", "Terraform", "AWS", "GCP"],
+            "highlights": ["500+ GitHub stars", "Interactive pipeline modal", "Multi-cloud"],
+            "accent": "#f59e0b",
+            "links": {
+                "github": "https://github.com/yourhandle/devops-toolkit",
+                "live": None,
+            },
+        },
     ]
 
 
