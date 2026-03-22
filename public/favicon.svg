@@ -1,3 +1,61 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+  <defs>
+    <linearGradient id="bg" x1="18" y1="12" x2="160" y2="168" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#09111F"/>
+      <stop offset="1" stop-color="#03060D"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(90 90) rotate(90) scale(78)">
+      <stop stop-color="#173A51" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#173A51" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="orbitTeal" x1="0" y1="0.5" x2="1" y2="0.5">
+      <stop stop-color="#65F6D1"/>
+      <stop offset="1" stop-color="#27C7B8"/>
+    </linearGradient>
+    <linearGradient id="orbitGold" x1="0" y1="0.5" x2="1" y2="0.5">
+      <stop stop-color="#FFCC70"/>
+      <stop offset="1" stop-color="#FF8454"/>
+    </linearGradient>
+    <linearGradient id="orbitBlue" x1="0" y1="0.5" x2="1" y2="0.5">
+      <stop stop-color="#88A9FF"/>
+      <stop offset="1" stop-color="#5E72FF"/>
+    </linearGradient>
+    <radialGradient id="core" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(90 90) rotate(90) scale(18)">
+      <stop stop-color="#F8FBFF"/>
+      <stop offset="1" stop-color="#B8D7FF"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="180" height="180" rx="38" fill="url(#bg)"/>
+  <rect x="1" y="1" width="178" height="178" rx="37" stroke="#FFFFFF" stroke-opacity="0.08"/>
+  <circle cx="90" cy="90" r="78" fill="url(#glow)"/>
+
+  <g opacity="0.18">
+    <path d="M30 132C55 101 84 86 124 88" stroke="#7ED5FF" stroke-width="1.2"/>
+    <path d="M58 38C80 53 103 76 118 112" stroke="#58E1B9" stroke-width="1.2"/>
+    <path d="M53 126C67 85 96 59 138 53" stroke="#FF9B6B" stroke-width="1.2"/>
+  </g>
+
+  <g transform="translate(90 90)">
+    <ellipse rx="42" ry="20" stroke="url(#orbitTeal)" stroke-width="11" stroke-linecap="round"/>
+    <g transform="rotate(60)">
+      <ellipse rx="42" ry="20" stroke="url(#orbitGold)" stroke-width="11" stroke-linecap="round"/>
+    </g>
+    <g transform="rotate(120)">
+      <ellipse rx="42" ry="20" stroke="url(#orbitBlue)" stroke-width="11" stroke-linecap="round"/>
+    </g>
+
+    <g opacity="0.95">
+      <circle cx="42" cy="0" r="4.5" fill="#65F6D1"/>
+      <g transform="rotate(60)">
+        <circle cx="42" cy="0" r="4.5" fill="#FFB067"/>
+      </g>
+      <g transform="rotate(120)">
+        <circle cx="42" cy="0" r="4.5" fill="#8FA3FF"/>
+      </g>
+    </g>
+
+    <circle r="14" fill="url(#core)"/>
+    <path d="M0 -9L3.5 -3.5L9 0L3.5 3.5L0 9L-3.5 3.5L-9 0L-3.5 -3.5Z" fill="#03111C"/>
+  </g>
 </svg>
