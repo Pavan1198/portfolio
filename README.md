@@ -120,6 +120,7 @@ After pushing to GitHub:
 - Update learning fallback data in `src/pages/Learning.tsx`
 - Update home content in `src/pages/Home.tsx`
 - Update contact defaults in `src/pages/Contact.tsx`
+- Use `EDITING_GUIDE.md` for a full file-by-file map of what to edit
 
 ## Python Requirements
 
