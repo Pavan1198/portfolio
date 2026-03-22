@@ -70,11 +70,11 @@ const fallbackData: LearningData = {
     },
     {
       id: "r04",
-      title: "You Don't Know JS",
-      description: "A classic deep dive into JavaScript's core behavior, covering scope, closures, async patterns, and more.",
-      url: "https://github.com/getify/You-Dont-Know-JS",
-      stars: "180k+",
-      tags: ["JavaScript", "Deep Dive", "Intermediate"],
+      title: "Real-World DevOps",
+      description: "Cloud Projects For Learning from Beginner to Advanced",
+      url: "https://github.com/NotHarshhaa/DevOps-Projects",
+      stars: "3.7k+",
+      tags: ["Java", "Deep Dive", "Intermediate"],
       accent: "#ec4899",
     },
     {

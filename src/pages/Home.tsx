@@ -124,7 +124,7 @@ export default function Home() {
           <div className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/3 transition-all delay-150 duration-700 group-hover:scale-110" />
 
           <div className="absolute left-1/2 top-1/3 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2 opacity-15 transition-opacity duration-500 group-hover:opacity-25">
-            {["EXPERIENCE", "SKILLS", "EDUCATION", "CONTACT"].map((item) => (
+            {["4+ Years Experience", "Jenkins, Kubernetes, Docker", "Bacherlor of Engineering", "India"].map((item) => (
               <div
                 key={item}
                 className="rounded-sm border border-white/20 px-4 py-1.5 font-mono text-[10px] tracking-[0.3em] text-white"

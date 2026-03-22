@@ -20,10 +20,10 @@ const stagger = {
 };
 
 const contactDefaults = {
-  email: "hello@paverse.in",
+  email: "paversehq@gmail.com",
   location: "India",
-  github: "github.com/yourhandle",
-  linkedin: "linkedin.com/in/yourhandle",
+  github: "github.com/paverse",
+  linkedin: "linkedin.com/in/paverse",
 };
 
 export default function ContactPage() {
