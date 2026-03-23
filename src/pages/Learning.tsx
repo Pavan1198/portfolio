@@ -154,6 +154,25 @@ const fallbackData: LearningData = {
   ],
 };
 
+const PALETTE = [
+  { bg: "rgba(99,102,241,0.15)", text: "#a5b4fc", border: "rgba(99,102,241,0.3)" },
+  { bg: "rgba(16,185,129,0.15)", text: "#6ee7b7", border: "rgba(16,185,129,0.3)" },
+  { bg: "rgba(245,158,11,0.15)", text: "#fcd34d", border: "rgba(245,158,11,0.3)" },
+  { bg: "rgba(239,68,68,0.15)", text: "#fca5a5", border: "rgba(239,68,68,0.3)" },
+  { bg: "rgba(168,85,247,0.15)", text: "#d8b4fe", border: "rgba(168,85,247,0.3)" },
+  { bg: "rgba(6,182,212,0.15)", text: "#67e8f9", border: "rgba(6,182,212,0.3)" },
+  { bg: "rgba(249,115,22,0.15)", text: "#fdba74", border: "rgba(249,115,22,0.3)" },
+  { bg: "rgba(20,184,166,0.15)", text: "#5eead4", border: "rgba(20,184,166,0.3)" },
+];
+
+function getTagColor(tag: string) {
+  let hash = 0;
+  for (let i = 0; i < tag.length; i++) {
+    hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return PALETTE[Math.abs(hash) % PALETTE.length];
+}
+
 export default function LearningPage() {
   const [, navigate] = useLocation();
   const { data } = useQuery<LearningData>({
@@ -200,9 +219,14 @@ export default function LearningPage() {
         <section className="mb-20">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={stagger}>
             <motion.div variants={fadeUp} className="mb-8 flex items-center gap-4">
-              <BookOpen size={16} className="text-white/30" />
-              <span className="font-mono text-[10px] text-white/30 tracking-[0.3em] uppercase">GitHub Repositories</span>
-              <div className="h-px flex-1 bg-white/8" />
+              <div
+                className="flex items-center justify-center w-7 h-7 rounded-lg flex-shrink-0"
+                style={{ background: "rgba(99,102,241,0.2)", border: "1px solid rgba(99,102,241,0.35)" }}
+              >
+                <BookOpen size={13} style={{ color: "#a5b4fc" }} />
+              </div>
+              <span className="font-mono text-[10px] tracking-[0.3em] uppercase" style={{ color: "#a5b4fc" }}>GitHub Repositories</span>
+              <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, rgba(99,102,241,0.3), transparent)" }} />
               <span className="font-mono text-[10px] text-white/20 tracking-widest">{repos.length} repos</span>
             </motion.div>
 
@@ -214,33 +238,50 @@ export default function LearningPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   variants={fadeUp}
-                  className="group relative overflow-hidden rounded-2xl border border-white/8 bg-white/3 p-6 transition-all duration-300 hover:border-white/15 hover:bg-white/5"
+                  className="group relative overflow-hidden rounded-2xl border transition-all duration-300 p-6"
+                  style={{
+                    background: `radial-gradient(ellipse at top left, ${repo.accent}14 0%, rgba(15,15,17,0.95) 60%)`,
+                    borderColor: "rgba(255,255,255,0.07)",
+                  }}
+                  whileHover={{ scale: 1.01, borderColor: "rgba(255,255,255,0.14)" }}
                 >
                   <div
-                    className="absolute left-0 right-0 top-0 h-px opacity-40 transition-opacity duration-300 group-hover:opacity-100"
+                    className="absolute left-0 right-0 top-0 h-px opacity-50 transition-opacity duration-300 group-hover:opacity-100"
                     style={{ background: `linear-gradient(90deg, transparent, ${repo.accent}, transparent)` }}
                   />
 
-                  <div className="mb-3 flex items-start justify-between gap-4">
+                  <div
+                    className="absolute top-0 left-0 w-28 h-28 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-300 pointer-events-none"
+                    style={{ background: repo.accent, transform: "translate(-30%, -30%)" }}
+                  />
+
+                  <div className="relative mb-3 flex items-start justify-between gap-4">
                     <h3 className="text-sm font-bold leading-tight text-white">{repo.title}</h3>
-                    <div className="flex flex-shrink-0 items-center gap-1 font-mono text-[10px] text-white/30">
-                      <Star size={10} className="fill-white/20 text-white/30" />
+                    <div
+                      className="flex flex-shrink-0 items-center gap-1 font-mono text-[10px] px-2 py-0.5 rounded-full"
+                      style={{ background: "rgba(250,204,21,0.12)", border: "1px solid rgba(250,204,21,0.25)", color: "#fcd34d" }}
+                    >
+                      <Star size={9} style={{ fill: "#fcd34d", color: "#fcd34d" }} />
                       {repo.stars}
                     </div>
                   </div>
 
-                  <p className="mb-4 text-xs text-white/40 leading-relaxed">{repo.description}</p>
+                  <p className="relative mb-4 text-xs text-white/40 leading-relaxed">{repo.description}</p>
 
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="relative flex items-center justify-between gap-4">
                     <div className="flex flex-wrap gap-1.5">
-                      {repo.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded border border-white/8 bg-white/5 px-2 py-0.5 font-mono text-[10px] text-white/40"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                      {repo.tags.map((tag) => {
+                        const c = getTagColor(tag);
+                        return (
+                          <span
+                            key={tag}
+                            className="rounded px-2 py-0.5 font-mono text-[10px]"
+                            style={{ background: c.bg, color: c.text, border: `1px solid ${c.border}` }}
+                          >
+                            {tag}
+                          </span>
+                        );
+                      })}
                     </div>
                     <ExternalLink size={13} className="flex-shrink-0 text-white/20 transition-colors group-hover:text-white/60" />
                   </div>
@@ -253,9 +294,14 @@ export default function LearningPage() {
         <section>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={stagger}>
             <motion.div variants={fadeUp} className="mb-8 flex items-center gap-4">
-              <Rss size={16} className="text-white/30" />
-              <span className="font-mono text-[10px] text-white/30 tracking-[0.3em] uppercase">Developer Blogs</span>
-              <div className="h-px flex-1 bg-white/8" />
+              <div
+                className="flex items-center justify-center w-7 h-7 rounded-lg flex-shrink-0"
+                style={{ background: "rgba(236,72,153,0.2)", border: "1px solid rgba(236,72,153,0.35)" }}
+              >
+                <Rss size={13} style={{ color: "#f9a8d4" }} />
+              </div>
+              <span className="font-mono text-[10px] tracking-[0.3em] uppercase" style={{ color: "#f9a8d4" }}>Developer Blogs</span>
+              <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, rgba(236,72,153,0.3), transparent)" }} />
               <span className="font-mono text-[10px] text-white/20 tracking-widest">{blogs.length} blogs</span>
             </motion.div>
 
@@ -267,30 +313,44 @@ export default function LearningPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   variants={fadeUp}
-                  className="group relative overflow-hidden rounded-2xl border border-white/8 bg-white/3 p-6 transition-all duration-300 hover:border-white/15 hover:bg-white/5"
+                  className="group relative overflow-hidden rounded-2xl border transition-all duration-300 p-6"
+                  style={{
+                    background: `radial-gradient(ellipse at top left, ${blog.accent}14 0%, rgba(15,15,17,0.95) 60%)`,
+                    borderColor: "rgba(255,255,255,0.07)",
+                  }}
+                  whileHover={{ scale: 1.01, borderColor: "rgba(255,255,255,0.14)" }}
                 >
                   <div
-                    className="absolute left-0 right-0 top-0 h-px opacity-40 transition-opacity duration-300 group-hover:opacity-100"
+                    className="absolute left-0 right-0 top-0 h-px opacity-50 transition-opacity duration-300 group-hover:opacity-100"
                     style={{ background: `linear-gradient(90deg, transparent, ${blog.accent}, transparent)` }}
                   />
 
-                  <div className="mb-1 flex items-start justify-between gap-4">
+                  <div
+                    className="absolute top-0 left-0 w-28 h-28 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-300 pointer-events-none"
+                    style={{ background: blog.accent, transform: "translate(-30%, -30%)" }}
+                  />
+
+                  <div className="relative mb-1 flex items-start justify-between gap-4">
                     <h3 className="text-sm font-bold leading-tight text-white">{blog.title}</h3>
                     <ExternalLink size={13} className="mt-0.5 flex-shrink-0 text-white/20 transition-colors group-hover:text-white/60" />
                   </div>
 
-                  <p className="mb-3 font-mono text-[10px] text-white/30 tracking-widest">by {blog.author}</p>
-                  <p className="mb-4 text-xs text-white/40 leading-relaxed">{blog.description}</p>
+                  <p className="relative mb-3 font-mono text-[10px] tracking-widest" style={{ color: blog.accent, opacity: 0.75 }}>by {blog.author}</p>
+                  <p className="relative mb-4 text-xs text-white/40 leading-relaxed">{blog.description}</p>
 
-                  <div className="flex flex-wrap gap-1.5">
-                    {blog.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded border border-white/8 bg-white/5 px-2 py-0.5 font-mono text-[10px] text-white/40"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                  <div className="relative flex flex-wrap gap-1.5">
+                    {blog.tags.map((tag) => {
+                      const c = getTagColor(tag);
+                      return (
+                        <span
+                          key={tag}
+                          className="rounded px-2 py-0.5 font-mono text-[10px]"
+                          style={{ background: c.bg, color: c.text, border: `1px solid ${c.border}` }}
+                        >
+                          {tag}
+                        </span>
+                      );
+                    })}
                   </div>
                 </motion.a>
               ))}
