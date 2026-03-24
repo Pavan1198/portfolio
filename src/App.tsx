@@ -3,7 +3,9 @@ import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import ChatbotLauncher from "@/components/ChatbotLauncher";
 import NotFound from "@/pages/not-found";
+import ChatbotPage from "@/pages/Chatbot";
 import Home from "@/pages/Home";
 import ResumePage from "@/pages/Resume";
 import ProjectsPage from "@/pages/Projects";
@@ -30,6 +32,7 @@ function Router() {
       <Route path="/projects" component={ProjectsPage} />
       <Route path="/contact" component={ContactPage} />
       <Route path="/learning" component={LearningPage} />
+      <Route path="/chatbot" component={ChatbotPage} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -42,6 +45,7 @@ function App() {
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <ScrollToTop />
           <Router />
+          <ChatbotLauncher />
         </WouterRouter>
         <Toaster />
       </TooltipProvider>

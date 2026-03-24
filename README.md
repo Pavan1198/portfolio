@@ -8,6 +8,7 @@ Personal portfolio for [paverse.in](https://paverse.in), built with a React + Ty
 - Resume
 - Projects
 - Learning
+- Chatbot
 - Contact
 - 404
 
@@ -79,6 +80,7 @@ Because of that:
 
 - Resume and Projects fall back to built-in frontend data when no API is configured.
 - Learning falls back to built-in frontend data when no API is configured.
+- Chatbot falls back to a built-in public-safe frontend profile when no live API is configured.
 - Contact falls back to `mailto:` when no external API is configured.
 - Resume unlocking can use the FastAPI backend via `/api/auth/resume`, or a frontend-only fallback password in static GitHub Pages builds.
 
@@ -93,6 +95,8 @@ https://api.paverse.in
 ```
 
 If you want to change the resume password, set the `RESUME_PASSWORD` environment variable on the Python API host.
+
+If you want the chatbot to use the live backend, set `AI_INTEGRATIONS_OPENAI_API_KEY` on the Python API host. You can optionally override `AI_INTEGRATIONS_OPENAI_BASE_URL` and `CHATBOT_MODEL`.
 
 If you want the resume password prompt to work on GitHub Pages without a hosted API, add a repository variable named `VITE_RESUME_PASSWORD`.
 
@@ -118,9 +122,26 @@ After pushing to GitHub:
 - Update resume fallback data in `src/pages/Resume.tsx`
 - Update project fallback data in `src/pages/Projects.tsx`
 - Update learning fallback data in `src/pages/Learning.tsx`
+- Update chatbot public-safe fallback, suggestions, and UI text in `src/pages/Chatbot.tsx`
+- Update chatbot launcher text in `src/components/ChatbotLauncher.tsx`
+- Update chatbot live/backend prompt and secure AI behavior in `api/main.py`
 - Update home content in `src/pages/Home.tsx`
 - Update contact defaults in `src/pages/Contact.tsx`
 - Use `EDITING_GUIDE.md` for a full file-by-file map of what to edit
+
+## Chatbot Content Audit
+
+If you want to review everything the chatbot can show before publishing, check these files first:
+
+- `src/pages/Chatbot.tsx`: public-safe frontend content. This file contains the chatbot UI, initial greeting, suggested questions, follow-up suggestion logic, public-safe local fallback replies, and local mode labels. Anything here is shipped to the browser and can be inspected by users.
+- `src/components/ChatbotLauncher.tsx`: floating launcher button label and accessibility text for opening the chatbot.
+- `api/main.py`: live backend prompt, `/api/chat` route, and server-side AI behavior. Keep richer or sensitive chatbot instructions here instead of in the frontend.
+- `src/App.tsx`: route registration for `/chatbot` and the global chatbot launcher mount point.
+
+Safe rule of thumb:
+
+- Put only public-safe fallback copy in `src/pages/Chatbot.tsx`
+- Put detailed or private AI instructions in `api/main.py`
 
 ## Python Requirements
 

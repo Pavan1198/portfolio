@@ -12,8 +12,10 @@ If you want to update text or data, the most important files are:
 - `src/pages/Projects.tsx`: projects page layout, project cards, fallback project list, "View Pipeline" button
 - `src/components/DevOpsPipelineModal.tsx`: full 3D DevOps pipeline visualizer, shapes, logs, stage names, colors, modal layout
 - `src/pages/Learning.tsx`: learning page layout and fallback learning resources
+- `src/pages/Chatbot.tsx`: chatbot page UI, public-safe local fallback profile, starter suggestions, follow-up suggestion logic, local-mode copy
+- `src/components/ChatbotLauncher.tsx`: floating launcher button text and label
 - `src/pages/Contact.tsx`: contact page content, form behavior, default contact info
-- `api/main.py`: backend API data for resume, projects, learning, contact form, and resume password
+- `api/main.py`: backend API data for resume, projects, learning, chatbot, contact form, and resume password
 - `src/index.css`: global colors, fonts, base theme, shared CSS variables
 
 ## Very Important Data Rule
@@ -28,6 +30,7 @@ Pages that work like this:
 - Resume
 - Projects
 - Learning
+- Chatbot
 - Contact contact-details fetch
 
 That means:
@@ -39,6 +42,12 @@ For consistent content everywhere, update both places:
 
 - frontend fallback file
 - `api/main.py`
+
+Important chatbot rule:
+
+- Anything in `src/pages/Chatbot.tsx` is bundled into the frontend and is visible to users
+- Keep only public-safe fallback chatbot content there
+- Put richer or private chatbot instructions in `api/main.py`
 
 ## Quick Update Map
 
@@ -160,6 +169,33 @@ Use these files for:
 - star counts
 - author names
 
+### Update chatbot content
+
+Edit:
+
+- `src/pages/Chatbot.tsx`
+- `src/components/ChatbotLauncher.tsx`
+- `api/main.py`
+
+Use these files for:
+
+- chatbot page branding like `Pavatar`
+- greeting text
+- suggested starter questions
+- follow-up suggestion chips shown after the first question
+- public-safe local fallback replies
+- local mode warning text
+- floating launcher text
+- backend live AI prompt
+- `/api/chat` behavior
+- backend model and environment-variable config
+
+Security note:
+
+- `src/pages/Chatbot.tsx` is public because it ships to the browser
+- `api/main.py` is the correct place for detailed or private chatbot instructions
+- if there is anything you do not want users to inspect, do not keep it in `src/pages/Chatbot.tsx`
+
 ### Update contact page
 
 Edit both:
@@ -190,6 +226,8 @@ Use this file for:
 
 - route paths
 - which page component loads for each URL
+- chatbot route registration
+- global chatbot launcher mount point
 
 If you want to change app startup behavior for GitHub Pages redirects, edit:
 
@@ -273,6 +311,7 @@ Use these files for:
 - `src/pages/Resume.tsx`: resume page
 - `src/pages/Projects.tsx`: projects listing page
 - `src/pages/Learning.tsx`: learning/resources page
+- `src/pages/Chatbot.tsx`: chatbot page UI, public-safe local fallback, greeting text, and question suggestions
 - `src/pages/Contact.tsx`: contact page
 - `src/pages/not-found.tsx`: 404 page
 
@@ -280,6 +319,7 @@ Use these files for:
 
 - `src/components/ResumePasswordModal.tsx`: resume unlock modal
 - `src/components/DevOpsPipelineModal.tsx`: 3D DevOps pipeline visualizer
+- `src/components/ChatbotLauncher.tsx`: floating launcher for opening the chatbot
 
 ### Frontend helper files
 
@@ -291,7 +331,7 @@ Use these files for:
 
 ### Backend files
 
-- `api/main.py`: all current API endpoints and backend fallback content
+- `api/main.py`: all current API endpoints, chatbot backend prompt, and backend fallback content
 - `api/requirements.txt`: Python dependencies
 - `api/__init__.py`: package marker
 - `api/contacts.json`: saved contact form entries after submissions
@@ -347,6 +387,15 @@ If you want to change the home page hero text:
 If you want to change the project cards:
 
 - `src/pages/Projects.tsx`
+- `api/main.py`
+
+If you want to audit everything the chatbot can publicly show:
+
+- `src/pages/Chatbot.tsx`
+- `src/components/ChatbotLauncher.tsx`
+
+If you want to audit the live AI chatbot prompt and behavior:
+
 - `api/main.py`
 
 If you want to switch favicon styles:

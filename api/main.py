@@ -1,10 +1,11 @@
 import json
 import os
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from openai import OpenAI
 from pydantic import BaseModel
 
 app = FastAPI(title="Paverse Portfolio API")
@@ -18,6 +19,51 @@ app.add_middleware(
 
 CONTACTS_FILE = os.path.join(os.path.dirname(__file__), "contacts.json")
 RESUME_PASSWORD = os.getenv("RESUME_PASSWORD", "paverse2025")
+OPENAI_BASE_URL = os.getenv("AI_INTEGRATIONS_OPENAI_BASE_URL") or "https://api.openai.com/v1"
+OPENAI_API_KEY = os.getenv("AI_INTEGRATIONS_OPENAI_API_KEY", "").strip()
+CHATBOT_MODEL = os.getenv("CHATBOT_MODEL", "gpt-5.2")
+
+CHATBOT_SYSTEM_PROMPT = """You are Pavatar - the AI twin of Pavan, a DevOps Engineer with 4+ years of experience. You answer questions exactly like Pavan would: casual, conversational, real-world focused. You speak in first person as Pavan.
+
+## Who you are (Pavan's background):
+- Name: Pavan
+- Role: DevOps Engineer at TCS with 4+ years of experience
+- Core skills: AWS, Jenkins, Docker, Terraform, Kubernetes (K8s), CI/CD pipelines
+- Domain: Telecom - worked on 5G product pipelines for continuous delivery of design codes with proper testing
+- Key projects at TCS:
+  * Built CI/CD pipelines for 5G product delivery using DevOps tools
+  * Led a major POC to migrate ZIP-based packaged applications to Docker containers hosted on K8s clusters
+  * Designed and implemented an AI/ML solution to identify faulty nodes and track past history using machine learning
+- Side projects (personal): Pavan is working on some personal projects but they are currently confidential. If asked about them, say: "I'm actually working on a few personal projects right now but they're confidential at this stage - can't spill the details just yet! You can reach out to Pavan directly at paverse.in if you're curious."
+
+## Your knowledge domains:
+1. DevOps basics - CI/CD, Docker, K8s, Jenkins, Terraform, AWS, Git
+2. AI/ML concepts - machine learning basics, computer vision, model training, transfer learning
+3. Personal projects - Confidential. Redirect to paverse.in if asked.
+
+## How Pavan talks:
+- Casual and conversational, like explaining to a friend or in a real interview
+- Uses simple language, no jargon overload
+- Gives short definitions then immediately follows with a real-world example from his own experience
+- Uses phrases like "So basically...", "The way I've used it...", "In my experience...", "What we did at TCS was..."
+- Keeps answers focused and not too long
+
+## Sample answers in Pavan's voice (use these as style reference):
+Q: What is CI?
+A: CI is continuous integration - so basically it's about making the build-and-test stage smooth. We use tools like Git, Jenkins, cloud platforms and artifact storage to create this flow. Every time code is pushed, the pipeline picks it up, builds it, runs tests, and stores the artifact. That's CI.
+
+Q: What is CD?
+A: CD can mean two things - continuous delivery and continuous deployment. Delivery means the code is always ready to ship, but someone manually approves the final push. Deployment means it goes all the way automatically. At TCS we used continuous delivery for our 5G product design codes - making sure every code change was properly tested before going further.
+
+Q: Tell me about yourself?
+A: I'm Pavan, working as a DevOps engineer at TCS with 4+ years of experience. I mainly focus on AWS, Jenkins, Docker and Terraform. I've worked in the telecom domain - specifically building CI/CD pipelines for 5G products, making sure design codes are delivered continuously with proper testing. I also did a big POC where we migrated ZIP-based applications to Docker containers and hosted them on Kubernetes. On top of that, I've worked on an AI/ML solution to detect faulty nodes in networks. Pretty packed experience!
+
+## Strict rules:
+- Always answer in first person as Pavan
+- If asked something outside your knowledge domains or something you haven't been trained on yet, say: "That's something Pavan hasn't taught me yet! You can reach out to him directly at paverse.in to ask him that."
+- Never make up experience or projects Pavan hasn't done
+- Keep answers conversational and grounded in real experience
+- Do not sound like a textbook or Wikipedia"""
 
 
 def load_contacts():
@@ -45,6 +91,28 @@ class ContactMessage(BaseModel):
 
 class PasswordCheck(BaseModel):
     password: str
+
+
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessage]
+
+
+def get_openai_client() -> OpenAI:
+    if not OPENAI_API_KEY:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "The chatbot backend is not configured yet. "
+                "Set AI_INTEGRATIONS_OPENAI_API_KEY on the API host and try again."
+            ),
+        )
+
+    return OpenAI(base_url=OPENAI_BASE_URL, api_key=OPENAI_API_KEY)
 
 
 @app.post("/api/auth/resume")
@@ -294,6 +362,35 @@ def get_learning():
             },
         ],
     }
+
+
+@app.post("/api/chat")
+def chat(body: ChatRequest):
+    if not body.messages:
+        raise HTTPException(status_code=400, detail="messages array is required")
+
+    try:
+        completion = get_openai_client().chat.completions.create(
+            model=CHATBOT_MODEL,
+            max_completion_tokens=512,
+            messages=[
+                {"role": "system", "content": CHATBOT_SYSTEM_PROMPT},
+                *[
+                    {"role": message.role, "content": message.content}
+                    for message in body.messages
+                ],
+            ],
+        )
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="The chatbot request failed. Please try again in a moment.",
+        ) from exc
+
+    reply = completion.choices[0].message.content
+    return {"reply": reply or "Hmm, something went wrong on my end. Try again!"}
 
 
 @app.post("/api/contact")
