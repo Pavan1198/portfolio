@@ -90,7 +90,7 @@ const fallbackProjects: Project[] = [
     category: "Full Stack",
     status: "Live",
     accent: "#ef4444",
-    links: { github: "#", live: "#" },
+    links: { github: "https://github.com/Pavan1198/dronxsys", live: "https://drone.paverse.in/" },
     highlights: ["Real-time sync", "AI completion"],
   },
   {
