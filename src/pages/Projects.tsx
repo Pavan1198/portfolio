@@ -105,6 +105,18 @@ const fallbackProjects: Project[] = [
     links: { github: "https://github.com/Pavan1198/portfolio", live: "https://paverse.in" },
     highlights: ["paverse.in", "Enterprise design", "Mobile-first"],
   },
+  {
+    id: "07",
+    title: "CivilCost",
+    description:
+      "This website is for analyzing quotation",
+    stack: ["React", "TypeScript", "Framer Motion", "Tailwind"],
+    category: "Design",
+    status: "Live",
+    accent: "#06b6d4",
+    links: { github: "https://github.com/Pavan1198/civilcost", live: "https://civilcost.paverse.in" },
+    highlights: ["civilcost.paverse.in", "Enterprise design", "Mobile-first"],
+  },
 ];
 
 const devOpsPipelineProject: Project = fallbackProjects[3];
